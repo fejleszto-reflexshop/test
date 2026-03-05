@@ -14,6 +14,7 @@ async function callAPI() {
     input_field.value = ''
 
     const user_text = document.createElement('p')
+    user_text.id = 'user_input'
     user_text.innerText = user_input
     chat_div.appendChild(user_text)
 
