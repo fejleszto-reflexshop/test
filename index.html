@@ -3,17 +3,36 @@
     <head>
         <meta charset="UTF-8">
         <title>chat</title>
+        <script src="main.js" defer></script>
+        <link rel="stylesheet" href="style.css">
+        <link type="image/png" rel="icon" href="https://img.icons8.com/ios-filled/50/FFFFFF/electronic-brain.png">
     </head>
-    <script src="main.js" defer></script>
-    <link rel="stylesheet" href="style.css">
-    <body>
-        <div class="chat" id="chat_div"></div>
 
-        <div class="input" id="input_div">
+    <body>
+        <nav class="chat-actions" >
+            <button type="button" id="save_chat">
+                <img width="24" height="24" src="https://img.icons8.com/fluency-systems-regular/48/save--v1.png" alt="save--v1"/>
+                Save chat
+            </button>
+            <button type="button" id="new_chat">
+                <img width="24" height="24" src="https://img.icons8.com/material-outlined/24/plus-2-math--v1.png" alt="plus-2-math--v1"/>
+                New chat
+            </button>
+            <button type="button" id="delete_chat" style="color: red">
+                <img width="24" height="24" src="https://img.icons8.com/material-outlined/24/1A1A1A/delete-trash.png" alt="plus-2-math--v1"/>
+                Delete chat
+            </button>
+        </nav>
+
+        <aside class="chat_history" id="chat_history"></aside>
+
+        <main class="chat" id="chat_div"></main>
+
+        <footer class="input" id="input_div">
             <label for="input_text"></label>
             <input id="input_text" type="text" autofocus placeholder="Message the model" autocomplete="off" autocapitalize="off" spellcheck="false" />
 
             <button type="button" id="btn_send">Send</button>
-        </div>
+        </footer>
     </body>
 </html>
