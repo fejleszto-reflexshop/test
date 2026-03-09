@@ -8,9 +8,9 @@ const chat_history = document.getElementById("chat_history")
 let chat_state = []
 
 document.addEventListener("DOMContentLoaded", async() => {
-    await get_chat_history()
+    // await get_chat_history()
     await handleSendActions()
-    new_chat_handler()
+    // new_chat_handler()
 })
 
 async function get_chat_history() {
@@ -84,28 +84,23 @@ async function callAPI() {
     user_text.innerText = user_input
     chat_div.appendChild(user_text)
 
-    const loading_text = document.createElement('p')
-    loading_text.id = 'loading_text'
-
     const count_seconds = setInterval(() => {
-        document.getElementById('loading_text').innerHTML = `Waiting for response ${counter++}s.`
+        changeTitle(`Waiting for response ${counter++}s.`)
     }, 1_000)
 
-    chat_div.appendChild(loading_text)
 
     changeTitle("Waiting for response...")
     const api = await fetch("https://reflexshop.app.n8n.cloud/webhook/api/chat", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({q: user_input, state: chat_state}),
+        body: JSON.stringify({q: user_input, state: chat_state, http_path: 'get'}),
     }).catch((e) => {chat_div.innerHTML = e.message})
 
     const response = await api.json().catch((e) => {chat_div.innerHTML = e.message })
 
     const make_message = document.createElement('p')
-    make_message.innerHTML = response.reply.replaceAll('\n', "")
+    make_message.innerHTML = response.reply
 
-    chat_div.removeChild(loading_text)
     clearInterval(count_seconds)
     chat_div.appendChild(make_message)
 
@@ -173,7 +168,7 @@ async function remove_chat_handler(chat_id) {
 async function handleSendActions() {
     btn_send.addEventListener("click", callAPI)
 
-    save_chat.addEventListener("click", async() => {
+    save_chat?.addEventListener("click", async() => {
         const [ai_state, html_state] = get_current_state("")
 
         await saveChatIntoDB(ai_state, html_state)
