@@ -4,17 +4,16 @@ const btn_send = document.getElementById("btn_send")
 const save_chat = document.getElementById("save_chat")
 const new_chat = document.getElementById("new_chat")
 const chat_history = document.getElementById("chat_history")
-const delete_chat = document.getElementById("delete_chat")
 
 let chat_state = []
 
 document.addEventListener("DOMContentLoaded", async() => {
-    await load_chat_history()
+    await get_chat_history()
     await handleSendActions()
     new_chat_handler()
 })
 
-async function load_chat_history() {
+async function get_chat_history() {
     const api_call = await fetch('https://reflexshop.app.n8n.cloud/webhook/api/get-chat-history', {
         method: 'GET',
         headers: {"Content-Type": "application/json"}
@@ -28,6 +27,9 @@ async function load_chat_history() {
     chat_history.appendChild(p_tag)
 
     response?.forEach((element) => {
+        const wrapper = document.createElement("div")
+        wrapper.className = "chat_wrapper"
+
         const chat_history_btn = document.createElement("button")
         chat_history_btn.className = "chat_history_btn"
         chat_history_btn.id = element.id
@@ -36,14 +38,33 @@ async function load_chat_history() {
         })
         chat_history_btn.innerHTML = element.title
 
-        chat_history.appendChild(chat_history_btn)
+        const remove_btn = document.createElement("button")
+        remove_btn.className = "remove_btn"
+        remove_btn.id = element.id
+
+        remove_btn.addEventListener("click", async() => {
+            await remove_chat_handler(element.id)
+        })
+
+        const img = document.createElement("img")
+        img.className = "remove_chat_img"
+        img.src = "https://img.icons8.com/ios-glyphs/30/FA5252/trash--v1.png"
+        img.width = 20
+        img.height = 20
+
+        remove_btn.appendChild(img)
+
+        wrapper.appendChild(chat_history_btn)
+        wrapper.appendChild(remove_btn)
+
+        chat_history.appendChild(wrapper)
     })
 }
 
-async function get_chat(id) {
+async function get_chat(chat_id) {
     const api_call = await fetch("https://reflexshop.app.n8n.cloud/webhook/api/get-chat", {
         method: 'GET',
-        headers: {"Content-Type": "application/json", "id": id},
+        headers: {"Content-Type": "application/json", "id": chat_id},
     }).catch((err) => {console.error(err)})
 
     const response = await api_call.json().catch((err) => {console.error(err)})
@@ -112,15 +133,19 @@ function changeTitle(text) {
 }
 
 async function saveChatIntoDB(ai_state, html_state) {
-    changeTitle("Saving...")
+    if(chat_state.length !== 0) {
+        changeTitle("Saving...")
 
-    await fetch('https://reflexshop.app.n8n.cloud/webhook/api/save-chat', {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({"ai": ai_state, "html": html_state})
-    }).then((response) => {response.json()}).catch((e) => {chat_div.innerHTML = e.message})
+        await fetch('https://reflexshop.app.n8n.cloud/webhook/api/save-chat', {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({"id": new Date().toISOString(), "ai": ai_state, "html": html_state})
+        }).then((response) => {response.json()}).catch((e) => {chat_div.innerHTML = e.message})
 
-    changeTitle("Chat")
+        changeTitle("Chat")
+
+        document.getElementById('save_chat_img').src = "https://img.icons8.com/ios-glyphs/30/checkmark--v1.png"
+    }
 }
 
 function new_chat_handler() {
@@ -132,8 +157,17 @@ function new_chat_handler() {
     })
 }
 
-async function delete_chat_handler() {
-    // todo
+async function remove_chat_handler(chat_id) {
+    const api_call = await fetch('https://reflexshop.app.n8n.cloud/webhook/api/delete-chat', {
+        method: 'DELETE',
+        headers: {"Content-Type": "application/json"},
+        body: {"id": chat_id}
+    }).catch((err) => {console.error(err)})
+
+    const response = await api_call.json().catch((err) => {console.error(err)})
+
+    document.querySelector('aside').innerHTML = ''
+    await get_chat_history()
 }
 
 async function handleSendActions() {

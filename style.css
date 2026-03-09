@@ -49,13 +49,20 @@ button:hover {
     gap: 1em;
 }
 
-.chat_history_btn {
+.chat_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .1em;
+}
+
+.chat_wrapper .chat_history_btn {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     width: 15em;
-    gap: 1em;
+    gap: .2em;
 
     background-color: lightgray;
     border: none;
@@ -63,6 +70,11 @@ button:hover {
 
     border-radius: 1em;
     height: 3em;
+}
+
+.chat_wrapper .remove_btn {
+    border: none;
+    background-color: transparent;
 }
 
 #user_input {
